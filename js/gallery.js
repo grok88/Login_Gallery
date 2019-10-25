@@ -1,123 +1,3 @@
-/* 
-*  Схематическое изображение класса Галереи
-*/
-/* 
-(function(){
-
-	//фУНКЦИЯ сравнения названия машин от А до Я
-	function compare (a,b){
-		const nameA = a.name.toUpperCase();
-		const nameB = b.name.toUpperCase();
-		let comparison = 0;
-		if (nameA > nameB) {
-			comparison = 1;
-		} else if (nameA < nameB) {
-			comparison = -1;
-		}
-		return comparison;
-	}
-
-	function compareReverse (a,b){
-		const nameA = a.name.toUpperCase();
-		const nameB = b.name.toUpperCase();
-		let comparison = 0;
-		if (nameA > nameB) {
-			comparison = 1;
-		} else if (nameA < nameB) {
-			comparison = -1;
-		}
-		return comparison * -1;
-	}
-
-	function compareDate(a,b){
-		let dateA = a.date;
-		let dateB = b.date;
-		return dateA - dateB;
-	}
-	// Сортирует нашу галерею
-	function sort(array){
-		let value = DOMElems.selectSort.value;
-		if (value == 1){
-			array.sort(compare);
-			console.log(array);
-			
-		} else if (value == 2){
-			array.sort(compareReverse);
-			console.log(array);
-
-		} else if (value == 3){
-			//array = data.slice().sort(compareDate);
-			console.log(array);
-			
-		}
-		return array;
-	}	
-    // Добавляет картинки в наш HTML
-    function insertDom(){
-		let resultHTML = '';
-		if (DOMElems.count !== dataArr.length + 1) {
-			// console.log(dataArr);
-			// console.log(DOMElems.selectSort.value);
-
-			let rez = sort(dataArr);
-			//console.log(sortArr);
-
-			rez.forEach((elem, index) => {
-				if (index < DOMElems.count){
-					resultHTML += `<div class="col-sm-3 col-xs-6">\
-										<img src="${elem.url}" alt="${elem.name}" class="img-thumbnail">\
-										<div class="info-wrapper">\
-											<div class="text-muted">${elem.name}</div>\
-											<div class="text-muted">${elem.params}</div>\
-											<div class="text-muted">${elem.date}</div>\
-										</div>\
-										<button class="btn btn-default" type="button" id="delete" data-toggle="tooltip" data-placement="left" title="" >Удалить</button>
-									</div>`; 
-				}
-            });
-			DOMElems.countSpan.textContent = DOMElems.count;
-			DOMElems.output.innerHTML = resultHTML;
-		} 
-    }
-    
-    // Показывает сколько картинок можно добавить
-    function showImg(){
-        DOMElems.countImg.textContent = dataArr.length - DOMElems.count;
-    }
-
-    function init() {
-
-        console.log(DOMElems.count,dataArr.length);
-        if (DOMElems.count  + 1 === dataArr.length) {
-            DOMElems.btn.style.backgroundColor = 'red';
-        } else if (DOMElems.count === dataArr.length) {
-            alert('Добавили все изображения');
-            return;
-        }
-
-        ++DOMElems.count;        
-        insertDom();        
-        showImg();
-    }
-
-    function deleteImg(e){
-        let target = e.target;
-        if (target.id != 'delete') return;
-        let parent = target.closest('.col-sm-3');
-        parent.remove();
-        --DOMElems.count;
-        DOMElems.countSpan.textContent = DOMElems.count;
-        DOMElems.countImg.textContent = dataArr.length - DOMElems.count;
-        DOMElems.btn.style.backgroundColor = "inherit";
-    }
-
-    DOMElems.btn.addEventListener("click", init);
-    document.addEventListener('click', deleteImg);
-})() 
- */
-
-
-
 let BaseGallery = function () {	
 	// DOM elements
 	this.DOMElems = {
@@ -194,6 +74,11 @@ BaseGallery.prototype = {
 			comparison = -1;
 		}
 		return comparison * -1;
+	},
+	compareDate : function(a,b){
+		let dateA = a.date;
+		let dateB = b.date;
+		return dateA - dateB;
 	},
 	// Сортирует нашу галерею
 	sort : function(array){
@@ -280,7 +165,7 @@ ExtendedGallery.prototype = {
 }
 
 // код функции наследования можно найти архиве, который содержится 
-// в материалах к сессии 29 (практический пример)
+
 inheritance(BaseGallery, ExtendedGallery);
 
 function inheritance(parent, child){
