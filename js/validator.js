@@ -1,5 +1,5 @@
-let loginForm = (function(){
-	let DOMElems = {
+function Validator(){
+	this.DOMElems = {
 		form : document.querySelector('.form-signin'),
 		email : document.querySelector('#inputEmail'),
 		password : document.querySelector('#inputPassword'),
@@ -8,34 +8,34 @@ let loginForm = (function(){
 		alertPass : document.querySelector('.alert-pass'),
 		main : document.querySelector('main')
 	}
+}
 
+Validator.prototype = {
 	//edit pass
-	function editPass(pass){
+	editPass : function(pass){
 		return pass.replace(/./g,'*');
-	}
-
+	},
 	// Show - hide pass
-	function showHidePass(e){
+	showHidePass : function(e){
 		let target = e.target;
 		if (target.id !== 'btn-pass') return;
 		
 		let btnPass = document.querySelector('.btn-pass');
 		let pass = document.querySelector('.user-pass');
 
-		pass.textContent = DOMElems.password.value;
+		pass.textContent = this.DOMElems.password.value;
 		btnPass.textContent = "Скрыть пароль";
 		
 		
 		if(btnPass.classList.contains('hideBtn')){
 			btnPass.textContent = "Показать пароль";
-			pass.textContent = editPass(DOMElems.password.value);
+			pass.textContent = this.editPass(this.DOMElems.password.value);
 		}
 
 		btnPass.classList.toggle('hideBtn');
-	}
-
+	},
 	//Add User info
-	function addUserInfo(login,pass){
+	addUserInfo : function(login,pass){
 		const div = document.createElement('div');
 		div.className = 'user-info';
 
@@ -51,7 +51,7 @@ let loginForm = (function(){
 			<tbody id="table-content">
 				<tr>
 					<td class='user-login'>${login}</td>
-					<td><span class ='user-pass'>${editPass(pass)}</span></td>
+					<td><span class ='user-pass'>${this.editPass(pass)}</span></td>
 					<td><button type = "button" class="btn-pass" id="btn-pass" >Показать пароль</button></td>
 				</tr>
 			</tbody>
@@ -67,101 +67,92 @@ let loginForm = (function(){
 		
 		div.append(btnBack);
 
-		DOMElems.main.append(div);
-	}
-
+		this.DOMElems.main.append(div);
+	},
 	//checkUSers
-	function checkUsers(login,pass){
+	checkUsers : function(login,pass){
 		let loginVal = login.toLowerCase();
 		let passVal = pass.toLowerCase();
 
 		let date = JSON.parse(localStorage.getItem('checkUser'));
 
-		date.forEach(elem => {
-			if (elem.login.toLowerCase() !== loginVal && elem.pass != passVal){
-				console.log('error');
-				DOMElems.alertPass.style.display = 'block';
-				setTimeout(() => DOMElems.alertPass.style.display = 'none',3000);
+		let check = date.filter(elem => {
+			if (elem.login.toLowerCase() !== loginVal && elem.pass != passVal){				
+				return false;
 			} else {
-				
-				DOMElems.alertPass.style.display = 'none';
-				console.log(`Success`);
-
-				DOMElems.form.style.display = 'none';
-				addUserInfo(login,pass);
+				return true;
 			}
 		});
-	}
+		
+		if (check.length != 0) {
+			this.DOMElems.alertPass.style.display = 'none';
+			console.log(`Success`);
 
+			this.DOMElems.form.style.display = 'none';
+			this.addUserInfo(login,pass);
+		} else {
+			console.log('error');
+			this.DOMElems.alertPass.style.display = 'block';
+			setTimeout(() => this.DOMElems.alertPass.style.display = 'none',3000);
+		};
+	},
 	// BackBtn
-	function BackBtn(e){
+	BackBtn : function (e){
 		let target = e.target;
 
 		if (target.id !== 'btn-back') return;
 
 		document.querySelector('.user-info').remove();
-		DOMElems.form.style.display = 'block';
-	}
-
+		this.DOMElems.form.style.display = 'block';
+	},
 	// handler
-	function handler(e){
-		const loginValue = DOMElems.email.value;
-		const passValue = DOMElems.password.value;
+	handler : function (e){
+		const loginValue = this.DOMElems.email.value;
+		const passValue = this.DOMElems.password.value;
 
 		if (loginValue !== "" && passValue !== ""){
-			console.log(2);
-			checkUsers(loginValue,passValue);
+			this.checkUsers(loginValue,passValue);
 		} else {
-			console.log(1);
-			DOMElems.form.before(DOMElems.alert);
-			DOMElems.alert.style.display = 'block';
+			this.DOMElems.form.before(this.DOMElems.alert);
+			this.DOMElems.alert.style.display = 'block';
 
 			if (loginValue == ''){
-				DOMElems.email.focus();
+				this.DOMElems.email.focus();
 			}
-			setTimeout(() => DOMElems.alert.style.display = 'none',3000);
+			setTimeout(() => this.DOMElems.alert.style.display = 'none',3000);
 		}
 
 		e.preventDefault();
-	}
-
+	},
 	//setLogAndPass 
-	function setLogAndPass (data){
-		let res = JSON.stringify(data);
+	setLogAndPass : function(database){
+		let res = JSON.stringify(database);
 		localStorage.setItem('checkUser',res);
-	}
-
+	},
 	// save login and pass to local storage
-	function rememberLS(e){
-		if (DOMElems.remember.checked){
-			const loginValue = DOMElems.email.value;
-			const passValue = DOMElems.password.value;
+	rememberLS : function(e){
+		if (this.DOMElems.remember.checked){
+			const loginValue = this.DOMElems.email.value;
+			const passValue = this.DOMElems.password.value;
 			let temp = [];
 			temp.push(loginValue,passValue); 
 			localStorage.setItem('temp', JSON.stringify(temp));
 		} else {
 			localStorage.removeItem('temp');
 		}
-	}
-
-	//	
-	function tempShow(e){
+	},	
+	tempShow : function(e){
 		if (localStorage.getItem('temp') === null) return;
 		let [login, pass] = JSON.parse(localStorage.getItem('temp'));
-		DOMElems.email.value = login;
-		DOMElems.password.value = pass;
-	}
+		this.DOMElems.email.value = login;
+		this.DOMElems.password.value = pass;
+	},
 	//load all Events
-	function initial(){
-		document.addEventListener('DOMContentLoaded', tempShow)
-		DOMElems.form.addEventListener('submit', handler);
-		DOMElems.main.addEventListener('click', showHidePass);
-		DOMElems.main.addEventListener('click', BackBtn);
-		DOMElems.remember.addEventListener('change', rememberLS);
+	initial : function(){
+		document.addEventListener('DOMContentLoaded', this.tempShow.bind(this));
+		this.DOMElems.form.addEventListener('submit', this.handler.bind(this));
+		this.DOMElems.main.addEventListener('click', this.showHidePass.bind(this));
+		this.DOMElems.main.addEventListener('click', this.BackBtn.bind(this));
+		this.DOMElems.remember.addEventListener('change', this.rememberLS.bind(this));
 	}
-
-	return {
-		initComponent : initial(),
-		setLogAndPass : setLogAndPass(data)
-	}
-})();
+}
