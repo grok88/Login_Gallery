@@ -43,7 +43,8 @@ BaseGallery.prototype = {
 				url : `http://${elem.url}`,
 				name : this.getName(elem),
 				params : `${elem.params.status}=>${elem.params.progress}`,
-				date : this.getDate(elem)
+				date : this.getDate(elem),
+				dateTemp : elem.date
 			};
 		});
 	},
@@ -76,9 +77,14 @@ BaseGallery.prototype = {
 		return comparison * -1;
 	},
 	compareDate : function(a,b){
-		let dateA = a.date;
-		let dateB = b.date;
+		let dateA = new Date(a.dateTemp).getTime();
+		let dateB = new Date(b.dateTemp).getTime();;
 		return dateA - dateB;
+	},
+	compareDateReverse : function(a,b){
+		let dateA = new Date(a.dateTemp).getTime();
+		let dateB = new Date(b.dateTemp).getTime();;
+		return dateB - dateA;
 	},
 	// Сортирует нашу галерею
 	sort : function(array){
@@ -88,9 +94,9 @@ BaseGallery.prototype = {
 		} else if (value == 2){
 			array.sort(this.compareReverse);
 		} else if (value == 3){
-			//array = data.slice().sort(compareDate);
-			//console.log(array);
-			
+			array = array.sort(this.compareDate);
+		} else if (value == 4){
+			array = array.sort(this.compareDateReverse);
 		}
 		return array;
 	},

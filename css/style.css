@@ -1,7 +1,9 @@
 :root {
   --jumbotron-padding-y: 3rem;
 }
-
+/* .gal{
+  display: none;
+} */
 .jumbotron {
   padding-top: var(--jumbotron-padding-y);
   padding-bottom: var(--jumbotron-padding-y);

@@ -4,9 +4,12 @@ function Validator(){
 		email : document.querySelector('#inputEmail'),
 		password : document.querySelector('#inputPassword'),
 		remember : document.querySelector('.remember'),
-		alert : document.querySelector('.alert'),
-		alertPass : document.querySelector('.alert-pass'),
-		main : document.querySelector('main')
+		loginAlertInfo : document.querySelector('#loginAlertInfo'),
+		main : document.querySelector('main'),
+		userLink : document.querySelectorAll('.user-link'),
+		gall : document.querySelector('.gal'),
+		userLink : document.querySelector('.user-link'),
+		galleryLink : document.querySelector('.gallery-link')
 	}
 }
 
@@ -36,6 +39,8 @@ Validator.prototype = {
 	},
 	//Add User info
 	addUserInfo : function(login,pass){
+		if(document.querySelector('.user-info')) document.querySelector('.user-info').remove();
+		console.log(1);
 		const div = document.createElement('div');
 		div.className = 'user-info';
 
@@ -68,6 +73,7 @@ Validator.prototype = {
 		div.append(btnBack);
 
 		this.DOMElems.main.append(div);
+		return true;
 	},
 	//checkUSers
 	checkUsers : function(login,pass){
@@ -77,7 +83,7 @@ Validator.prototype = {
 		let date = JSON.parse(localStorage.getItem('checkUser'));
 
 		let check = date.filter(elem => {
-			if (elem.login.toLowerCase() !== loginVal && elem.pass != passVal){				
+			if (elem.login.toLowerCase() !== loginVal || elem.pass != passVal){		
 				return false;
 			} else {
 				return true;
@@ -85,15 +91,13 @@ Validator.prototype = {
 		});
 		
 		if (check.length != 0) {
-			this.DOMElems.alertPass.style.display = 'none';
 			console.log(`Success`);
-
 			this.DOMElems.form.style.display = 'none';
-			this.addUserInfo(login,pass);
+			return true;
 		} else {
 			console.log('error');
-			this.DOMElems.alertPass.style.display = 'block';
-			setTimeout(() => this.DOMElems.alertPass.style.display = 'none',3000);
+			this.showAlertInfo('Неправильный логин или пароль', 'alert-warning');
+			setTimeout(() => this.DOMElems.loginAlertInfo.classList.add('hidden'),3000);
 		};
 	},
 	// BackBtn
@@ -103,26 +107,45 @@ Validator.prototype = {
 		if (target.id !== 'btn-back') return;
 
 		document.querySelector('.user-info').remove();
-		this.DOMElems.form.style.display = 'block';
+
+		this.DOMElems.gall.classList.remove('hide');
+
+		this.DOMElems.userLink.style.textDecoration = 'inherit';
+		this.DOMElems.userLink.style.color = 'inherit';
+
+		this.DOMElems.galleryLink.style.textDecoration = 'underline';
+		this.DOMElems.galleryLink.style.color = 'red';
 	},
-	// handler
-	handler : function (e){
-		const loginValue = this.DOMElems.email.value;
-		const passValue = this.DOMElems.password.value;
+	
+	checkCorrectLogin : function (login) {
+		const regLogin = /^([a-z0-9_-]+)@([\da-z.-]+).([a-z.]{2,6})$/;
+		return regLogin.test(login);
+	},
 
-		if (loginValue !== "" && passValue !== ""){
-			this.checkUsers(loginValue,passValue);
-		} else {
-			this.DOMElems.form.before(this.DOMElems.alert);
-			this.DOMElems.alert.style.display = 'block';
+	showAlertInfo : function(str, classAlert){
+		if (!classAlert) classAlert = 'alert-info';
+		this.DOMElems.loginAlertInfo.classList.remove('alert-warning','alert-danger','alert-info','hidden');
+		this.DOMElems.loginAlertInfo.classList.add(classAlert);
+		this.DOMElems.loginAlertInfo.innerHTML = str;
+	},
+	
+	handler : function (loginValue,passValue){
 
-			if (loginValue == ''){
-				this.DOMElems.email.focus();
+		if(this.checkCorrectLogin(loginValue)){
+			if (passValue.length < 8){
+				this.showAlertInfo('Пароль  не должен быть меньше 8 символов','alert-warning');
+				return false;
+			} else {
+				if(this.checkUsers(loginValue,passValue)){
+					console.log(true);
+					this.showAlertInfo('Авторизация прошла успешно','alert-success');
+					return true;
+				}
 			}
-			setTimeout(() => this.DOMElems.alert.style.display = 'none',3000);
-		}
-
-		e.preventDefault();
+		} else {
+			this.showAlertInfo('Некоректный login','alert-warning');
+			return false;
+		}		
 	},
 	//setLogAndPass 
 	setLogAndPass : function(database){
@@ -150,7 +173,6 @@ Validator.prototype = {
 	//load all Events
 	initial : function(){
 		document.addEventListener('DOMContentLoaded', this.tempShow.bind(this));
-		this.DOMElems.form.addEventListener('submit', this.handler.bind(this));
 		this.DOMElems.main.addEventListener('click', this.showHidePass.bind(this));
 		this.DOMElems.main.addEventListener('click', this.BackBtn.bind(this));
 		this.DOMElems.remember.addEventListener('change', this.rememberLS.bind(this));

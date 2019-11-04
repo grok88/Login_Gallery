@@ -8,7 +8,7 @@ let database = [
 		pass : 322
 	},
 	{
-		login : 'Gaben',
-		pass : 'dota'
+		login : 'Gaben@tut.by',
+		pass : 'dotabestgame'
 	}
 ]
